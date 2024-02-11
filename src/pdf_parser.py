@@ -61,7 +61,7 @@ class PDFParser:
     
     def get_data(self):
         return {
-            'time': utils.get_unix_time(),
+            'timestamp': utils.get_unix_time(),
             'zoom_registration_link': self.zoom_registration_link,
             'is_valid_zoom_registration_link': self.is_valid_zoom_registration_link
         }
