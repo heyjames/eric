@@ -23,9 +23,9 @@ class PDFParser:
         # If a Zoom registration link exists, check for a successful response
         if zoom_registration_link:
             # Use False for testing purposes
-            is_valid_zoom_registration_link = False
+            # is_valid_zoom_registration_link = False
 
-            # is_valid_zoom_registration_link = utils.is_successful_http_response(zoom_registration_link)
+            is_valid_zoom_registration_link = utils.is_successful_http_response(zoom_registration_link)
 
         self.zoom_registration_link = zoom_registration_link
         self.is_valid_zoom_registration_link = is_valid_zoom_registration_link
@@ -35,7 +35,7 @@ class PDFParser:
     def read_pdf(self, path):
         try:
             # Handle local or remote URL
-            if utils.is_local_path_or_url(path):
+            if utils.is_local_path(path):
                 pdf_document = fitz.open(path)
             else:
                 response = requests.get(path)

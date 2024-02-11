@@ -1,5 +1,5 @@
 A server application designed to enhance the Legistar website experience.
-* Validate Zoom registration links in PDFs
+* Configure a schedule to periodically validate Zoom registration links in PDFs
 * Interface with the browser script to highlight canceled meetings, empty meeting entries
 
 ## Install Virtual Environment

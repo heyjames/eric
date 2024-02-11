@@ -3,6 +3,7 @@ from config_module import config
 import os
 import re
 import requests
+import utils
 
 class LegistarParser:
     """
@@ -45,9 +46,17 @@ class LegistarParser:
             return None
 
     def get_data(self):
-        # Open the PDF from the locally saved path
-        with open(self.path, 'r', encoding='utf-8') as file:
-            html_content = file.read()
+        if utils.is_local_path(self.path):
+            # Open HTML content from the locally saved path
+            with open(self.path, 'r', encoding='utf-8') as file:
+                html_content = file.read()
+        else:
+            try:
+                response = requests.get(self.path)
+                response.raise_for_status()
+                html_content = response.text
+            except requests.exceptions.RequestException as e:
+                print(f"Error fetching URL: {e}")
 
         # Initialize Beautiful Soup
         soup = BeautifulSoup(html_content, 'html.parser')

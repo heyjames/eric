@@ -77,7 +77,7 @@ def is_successful_http_response(url):
         return f'Error: {str(e)}'
 
 # Check if URL is a local path
-def is_local_path_or_url(path):
+def is_local_path(path):
     parsed_url = urlparse(path)
     return parsed_url.scheme == '' or parsed_url.scheme in ('file', 'data')
 
