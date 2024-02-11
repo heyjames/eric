@@ -5,8 +5,10 @@ import time
 
 # Parse the Legistar website and create an dictionary of each meeting
 def get_formatted_upcoming_and_all_meetings():
-    legistar_path = config['settings']['LEGISTAR_URL']
-    # legistar_path = 'data/legistar_html_content.html'
+    if config['settings'].getboolean('debug'):
+        legistar_path = config['settings']['debug_legistar_path']
+    else:
+        legistar_path = config['settings']['legistar_url']
 
     legistar_website = LegistarParser(legistar_path)
 
@@ -29,7 +31,7 @@ def combine_pdf_and_meeting_data(meeting_data, pdf_data):
 
     return result
 
-# Get the first non-canceled meeting
+# Get the first non-canceled meeting (only supports Upcoming Meetings)
 def get_first_non_canceled_meeting(meetings):
     for meeting in meetings:
         if meeting['is_meeting_canceled'] == False:

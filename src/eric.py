@@ -10,14 +10,6 @@ import time
 # Add validation to dictionaries (e.g., legistar_parser.py get_data())
 # Add a log handler
 # Add bubble up error handling and add to log file
-# Extract CSS selectors to config file
-
-# api.py
-    # get_first_non_canceled_meeting(meetings)
-        # Handle whether the argument is from the Upcoming or All Meetings section. 
-        # All Meetings might require a descending loop.
-
-    # get_formatted_upcoming_and_all_meetings()
 
 # legistar_parser.py
     # download_html_response()
@@ -43,23 +35,23 @@ def cleanup_before_exit():
 
 # Register times in the scheduler module
 def setup_scheduler():
-    # Used for testing
-    # schedule.every().sunday.at('01:26').do(task)
-    # schedule.every(1).seconds.do(task)
+    if config['settings'].getboolean('debug'):
+        # schedule.every().sunday.at('01:26').do(task)
+        schedule.every(1).seconds.do(task)
+    else:
+        # Get schedule from config file
+        for day, times_str in config['schedule'].items():
+            # Split the comma-separated times
+            times = []
+            for time in times_str.split(','):
+                stripped_time = time.strip()
+                times.append(stripped_time)
 
-    # Get schedule from config file
-    for day, times_str in config['schedule'].items():
-        # Split the comma-separated times
-        times = []
-        for time in times_str.split(','):
-            stripped_time = time.strip()
-            times.append(stripped_time)
-
-        # Parse and schedule jobs for each time in the list
-        for time_str in times:
-            parsed_time = datetime.strptime(time_str, '%H:%M').time()
-            print("::: parsed_time.strftime('%H:%M') :::", parsed_time.strftime('%H:%M'))
-            getattr(schedule.every(), day).at(parsed_time.strftime('%H:%M')).do(task)
+            # Parse and schedule jobs for each time in the list
+            for time_str in times:
+                parsed_time = datetime.strptime(time_str, '%H:%M').time()
+                print("::: parsed_time.strftime('%H:%M') :::", parsed_time.strftime('%H:%M'))
+                getattr(schedule.every(), day).at(parsed_time.strftime('%H:%M')).do(task)
 
 # Tasks executed by the scheduler module
 def task():
@@ -72,10 +64,12 @@ def task():
     first_non_canceled_meeting =  api.get_first_non_canceled_meeting(upcoming_meetings)
 
     # Get the Zoom registration link from the PDF and check its HTTP response
-    # pdf_path = 'https://alameda.legistar.com/View.ashx?M=A&ID=1157953&GUID=5BF30CE1-10BE-4DEF-81ED-FFDA441F484E'
-    # pdf_path = '/Users/james/Downloads/agenda_broken_link.pdf' # Development
-    # pdf_data = api.get_pdf_data(pdf_path) # Development
-    pdf_data = api.get_pdf_data(first_non_canceled_meeting['agenda'])
+    if config['settings'].getboolean('debug'):
+        # pdf_path = config['settings']['debug_pdf_url']
+        pdf_path = config['settings']['debug_pdf_path']
+        pdf_data = api.get_pdf_data(pdf_path)
+    else:
+        pdf_data = api.get_pdf_data(first_non_canceled_meeting['agenda'])
 
     # Combine the meeting data with the PDF data into one dictionary
     result = api.combine_pdf_and_meeting_data(first_non_canceled_meeting, pdf_data)

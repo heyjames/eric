@@ -1,3 +1,4 @@
+from config_module import config
 import fitz # PyMuPDF
 import requests
 import utils
@@ -23,9 +24,10 @@ class PDFParser:
         # If a Zoom registration link exists, check for a successful response
         if zoom_registration_link:
             # Use False for testing purposes
-            # is_valid_zoom_registration_link = False
-
-            is_valid_zoom_registration_link = utils.is_successful_http_response(zoom_registration_link)
+            if config['settings'].getboolean('debug'):
+                is_valid_zoom_registration_link = False
+            else:
+                is_valid_zoom_registration_link = utils.is_successful_http_response(zoom_registration_link)
 
         self.zoom_registration_link = zoom_registration_link
         self.is_valid_zoom_registration_link = is_valid_zoom_registration_link

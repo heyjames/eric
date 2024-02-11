@@ -15,7 +15,7 @@ class LegistarParser:
     # Download the HTML to a local file to be used for development
     def download_html_response(self, url):
         try:
-            file_path = 'data/legistar_html_content.html'
+            file_path = config['settings']['debug_legistar_path']
 
             # Send an HTTP GET request to the provided URL
             response = requests.get(url)
@@ -47,6 +47,9 @@ class LegistarParser:
 
     def get_data(self):
         if utils.is_local_path(self.path):
+            if config['settings'].getboolean('debug_download_html'):
+                html_content = self.download_html_response(config['settings']['legistar_url'])
+            
             # Open HTML content from the locally saved path
             with open(self.path, 'r', encoding='utf-8') as file:
                 html_content = file.read()
@@ -127,7 +130,7 @@ class LegistarParser:
     def parse_details(self, columns):
         details = columns[5].select_one("a[id$='_hypMeetingDetail']")
         if details and details.has_attr('href'):
-            details = config['settings']['LEGISTAR_URL'] + details['href']
+            details = config['settings']['legistar_url'] + details['href']
         else:
             details = ''
         return details
@@ -135,7 +138,7 @@ class LegistarParser:
     def parse_agenda(self, columns):
         agenda = columns[6].select_one("a[id$='_hypAgenda']")
         if agenda and agenda.has_attr('href'):
-            agenda = config['settings']['LEGISTAR_URL'] + agenda['href']
+            agenda = config['settings']['legistar_url'] + agenda['href']
         else:
             agenda = ''
         return agenda
@@ -146,7 +149,7 @@ class LegistarParser:
             pattern = r"window\.open\('([^']+)',"
             match = re.search(pattern, video['onclick'])
             if match:
-                video = config['settings']['LEGISTAR_URL'] + match.group(1)
+                video = config['settings']['legistar_url'] + match.group(1)
         else:
             video = ''
         return video

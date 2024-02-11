@@ -1,3 +1,4 @@
+from config_module import config
 from datetime import datetime
 import json
 import pytz
@@ -27,7 +28,7 @@ def convert_iso_time_to_human_readable(iso_string):
     utc_datetime = utc_datetime.replace(tzinfo=pytz.utc)
 
     # Convert to local time
-    local_timezone = pytz.timezone('America/Los_Angeles')
+    local_timezone = pytz.timezone(config['settings']['timezone'])
     local_datetime = utc_datetime.astimezone(local_timezone)
 
     # Format as human-readable date with 24-hour time
