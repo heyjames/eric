@@ -31,8 +31,8 @@ class LegistarParser:
                     # If the file exists, ask the user for action
                     user_input = input(f"The file '{file_path}' already exists. Do you want to overwrite it? (y/n): ").lower()
                     if user_input != 'y':
-                        print("Operation aborted.")
-                        exit()
+                        print("Operation aborted. Reusing existing file.")
+                        return
 
                 # Write the HTML content to a file
                 with open(file_path, 'w', encoding='utf-8') as file:
