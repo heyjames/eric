@@ -8,12 +8,8 @@ import time
 
 # TODO
 # Add validation to dictionaries (e.g., legistar_parser.py get_data())
-# Add a log handler
+# Add log handlers
 # Add bubble up error handling and add to log file
-
-# legistar_parser.py
-    # download_html_response()
-        # Test a non-yes answer
 
 # Main loop
 def main_loop():
@@ -50,7 +46,7 @@ def setup_scheduler():
             # Parse and schedule jobs for each time in the list
             for time_str in times:
                 parsed_time = datetime.strptime(time_str, '%H:%M').time()
-                print("::: parsed_time.strftime('%H:%M') :::", parsed_time.strftime('%H:%M'))
+                print(f"::: parsed_time.strftime('%H:%M') ::: {day} {parsed_time.strftime('%H:%M')}")
                 getattr(schedule.every(), day).at(parsed_time.strftime('%H:%M')).do(task)
 
 # Tasks executed by the scheduler module
@@ -76,20 +72,27 @@ def task():
 
     print(result)
 
+    # Send an email about broken Zoom links to recipients listed in the 
+    # config.cfg file
+    if not result['is_valid_zoom_registration_link'] and config['settings'].getboolean('enable_email_notifications'):
+        try:
+            api.send_emails(result)
+        except Exception as e:
+            print(f'Error sending email: {e}')
+
 # Begin script
 if __name__ == "__main__":
     # Register the default SIGINT handler (^C will terminate the script)
     signal.signal(signal.SIGINT, signal.default_int_handler)
 
-    setup_scheduler()
-
     try:
+        setup_scheduler()
         main_loop()
-
     except KeyboardInterrupt:
         # Executed when ^C is pressed
         print("\n^C detected. Exiting gracefully...")
-
+    except Exception as e:
+        print(f"An error occurred: {e}")
     finally:
         # Executed on script exit (normal or exception)
         print("Script exiting.")

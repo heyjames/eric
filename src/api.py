@@ -1,7 +1,23 @@
 from config_module import config
 from legistar_parser import LegistarParser
 from pdf_parser import PDFParser
+from gmail import send_message
 import time
+
+def send_emails(meeting_data):
+    if not config['email_broken_zoom_link']['recipients']:
+        return
+    
+    email_content = {
+        'to': config['email_broken_zoom_link']['recipients'],
+        'subject': 'Broken Zoom Link Detected',
+        'body': 'Broken Zoom link detected for meeting:\n' \
+            + meeting_data['name'] \
+            + ', ' + meeting_data['date'] \
+            + ', ' + meeting_data['time']
+    }
+
+    send_message(email_content)
 
 # Parse the Legistar website and create an dictionary of each meeting
 def get_formatted_upcoming_and_all_meetings():
