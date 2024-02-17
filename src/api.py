@@ -54,3 +54,23 @@ def get_first_non_canceled_meeting(meetings):
             return meeting
         
         time.sleep(1)
+
+def get_first_meeting_data():
+    # Format meeting data into dictionaries from Legistar website
+    upcoming_meetings, all_meetings = get_formatted_upcoming_and_all_meetings()
+
+    # Get the first non-canceled meeting
+    first_non_canceled_meeting =  get_first_non_canceled_meeting(upcoming_meetings)
+
+    # Get the Zoom registration link from the PDF and check its HTTP response
+    if config['settings'].getboolean('debug'):
+        # pdf_path = config['settings']['debug_pdf_url']
+        pdf_path = config['settings']['debug_pdf_path']
+        pdf_data = get_pdf_data(pdf_path)
+    else:
+        pdf_data = get_pdf_data(first_non_canceled_meeting['agenda'])
+
+    # Combine the meeting data with the PDF data into one dictionary
+    result = combine_pdf_and_meeting_data(first_non_canceled_meeting, pdf_data)
+
+    return result
