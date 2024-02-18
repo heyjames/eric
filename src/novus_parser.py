@@ -71,3 +71,9 @@ class NovusParser:
             return int(row['id'][-1])
         else:
             return None
+    
+    def is_novus_regular_meeting(self, first_novus_meeting_agenda_raw_html):
+        if 'Council Chambers' in first_novus_meeting_agenda_raw_html:
+            return True
+        else:
+            return False

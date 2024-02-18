@@ -30,6 +30,11 @@ def get_first_novus_meeting_data():
     # Get the raw HTML from the first meeting's agenda's path
     first_novus_meeting_agenda_raw_html = utils.get_html_content(agenda_path)
 
+    # Detect if it's a regular or special meeting
+    if not novus_parser.is_novus_regular_meeting(first_novus_meeting_agenda_raw_html):
+        print('The first NovusAgenda meeting is not a regular meeting. Return None.')
+        return None
+
     # Extract all the Zoom registration URLs
     novus_meeting_agenda_zoom_urls = utils.extract_zoom_registration_links(first_novus_meeting_agenda_raw_html)
 
