@@ -1,8 +1,6 @@
 from bs4 import BeautifulSoup
 from config_module import config
-import os
 import re
-import requests
 import utils
 
 class LegistarParser:
@@ -12,54 +10,9 @@ class LegistarParser:
     def __init__(self, path):
         self.path = path
 
-    # Download the HTML to a local file to be used for development
-    def download_html_response(self, url):
-        try:
-            file_path = config['settings']['debug_legistar_path']
-
-            # Send an HTTP GET request to the provided URL
-            response = requests.get(url)
-
-            # Check if the request was successful
-            if response.status_code == 200:
-                # Create the 'data' folder if it doesn't exist
-                if not os.path.exists('data'):
-                    os.makedirs('data')
-
-                # Check if the file already exists
-                if os.path.exists(file_path):
-                    # If the file exists, ask the user for action
-                    user_input = input(f"The file '{file_path}' already exists. Do you want to overwrite it? (y/n): ").lower()
-                    if user_input != 'y':
-                        print("Operation aborted. Reusing existing file.")
-                        return
-
-                # Write the HTML content to a file
-                with open(file_path, 'w', encoding='utf-8') as file:
-                    file.write(response.text)
-                
-                print(f"HTML content saved to '{file_path}'")
-            else:
-                response.raise_for_status()
-        except requests.RequestException as e:
-            print(f"Error: {e}")
-            return None
-
     def get_data(self):
-        if utils.is_local_path(self.path):
-            if config['settings'].getboolean('debug_download_html'):
-                html_content = self.download_html_response(config['settings']['legistar_url'])
-            
-            # Open HTML content from the locally saved path
-            with open(self.path, 'r', encoding='utf-8') as file:
-                html_content = file.read()
-        else:
-            try:
-                response = requests.get(self.path)
-                response.raise_for_status()
-                html_content = response.text
-            except requests.exceptions.RequestException as e:
-                print(f"Error fetching URL: {e}")
+        # Get raw HTML
+        html_content = utils.get_html_content(self.path)
 
         # Initialize Beautiful Soup
         soup = BeautifulSoup(html_content, 'html.parser')

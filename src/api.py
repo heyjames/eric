@@ -1,8 +1,38 @@
 from config_module import config
 from legistar_parser import LegistarParser
+from novus_parser import NovusParser
 from pdf_parser import PDFParser
 from gmail import send_message
+import utils
 import time
+
+def get_first_novus_meeting_data():
+    novus_parser = NovusParser(config['settings']['debug_novus_path']) # local path
+    novus_meetings = novus_parser.get_formatted_novus_meetings() # parse raw HTML into a meetings dictionary
+    first_novus_meeting_agenda_url = novus_meetings[0]['agenda'] # get the agenda url from the first meeting. Not used in debug mode.
+    first_novus_meeting_agenda_raw_html = utils.get_html_content(config['settings']['debug_novus_agenda_path']) # get the raw HTML from the agenda url
+    novus_meeting_agenda_zoom_urls = utils.extract_zoom_registration_links(first_novus_meeting_agenda_raw_html) # extract all the Zoom registration urls
+    same_zoom_url_count = utils.count_same_strings_from_list(novus_meeting_agenda_zoom_urls)
+    if same_zoom_url_count == 4:
+        # Use False for testing purposes
+        if config['settings'].getboolean('debug'):
+            is_valid_zoom_registration_link = False
+        else:
+            is_valid_zoom_registration_link = utils.is_successful_http_response(novus_meeting_agenda_zoom_urls[0])
+
+        my_dict = {
+            'novus_success': True,
+            'novus_timestamp': utils.get_unix_time(),
+            'novus_zoom_registration_link': novus_meeting_agenda_zoom_urls[0],
+            'novus_is_valid_zoom_registration_link': is_valid_zoom_registration_link
+        }
+    else:
+        my_dict = {
+            'novus_success': False,
+            'novus_timestamp': utils.get_unix_time()
+        }
+
+    return my_dict
 
 def send_emails(meeting_data):
     if not config['email_broken_zoom_link']['recipients']:

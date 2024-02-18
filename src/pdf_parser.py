@@ -19,7 +19,7 @@ class PDFParser:
         pdf_text = self.read_pdf(path)
 
         # Extract the Zoom registration link from the PDF text
-        zoom_registration_link = utils.extract_zoom_registration_link(pdf_text)
+        zoom_registration_link = utils.extract_zoom_registration_links(pdf_text)[0]
 
         # If a Zoom registration link exists, check for a successful response
         if zoom_registration_link:

@@ -4,6 +4,7 @@ import json
 import pytz
 import requests
 import re
+import os
 import time
 from urllib.parse import urlparse
 
@@ -53,18 +54,18 @@ def extract_urls(text):
     return urls
 
 # Extract Zoom registration URLs from given text using regular expression
-def extract_zoom_registration_link(text):
+def extract_zoom_registration_links(text):
     urls = []
 
     try:
-        url_pattern = re.compile(r'https?://alamedaca-gov\.zoom\.us/webinar/register/\S+')
+        url_pattern = re.compile(r'https?://alamedaca-gov\.zoom\.us/webinar/register/[a-zA-Z0-9_\-]+')
         found_urls = url_pattern.findall(text)
 
         urls.extend(found_urls)
     except Exception as e:
         print(f'Error: {str(e)}')
 
-    return urls[0]
+    return urls
 
 # Check if an HTML response is successful
 def is_successful_http_response(url):
@@ -85,6 +86,67 @@ def is_local_path(path):
 # Convert a dictionary to JSON
 def to_json(self, dictionary):
     return json.dumps(dictionary)
+
+# Get raw HTML from a local file path or URL
+def get_html_content(path):
+    if is_local_path(path):
+        # Open HTML content from the locally saved path
+        with open(path, 'r', encoding='utf-8') as file:
+            html_content = file.read()
+        
+        return html_content
+    else:
+        try:
+            response = requests.get(path)
+            response.raise_for_status()
+            html_content = response.text
+
+            return html_content
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching URL: {e}")
+
+# Download the HTML to a local file to be used for development
+def download_html_response(url_path, file_path):
+    try:
+        # Send an HTTP GET request to the provided URL
+        response = requests.get(url_path)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Create the 'data' folder if it doesn't exist
+            if not os.path.exists('data'):
+                os.makedirs('data')
+
+            # Check if the file already exists
+            if os.path.exists(file_path):
+                # If the file exists, ask the user for action
+                user_input = input(f"The file '{file_path}' already exists. Do you want to overwrite it? (y/n): ").lower()
+                if user_input != 'y':
+                    print("Operation aborted. Reusing existing file.")
+                    return
+
+            # Write the HTML content to a file
+            with open(file_path, 'w', encoding='utf-8') as file:
+                file.write(response.text)
+            
+            print(f"HTML content saved to '{file_path}'")
+        else:
+            response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Error: {e}")
+        return None
+
+def count_same_strings_from_list(my_list):
+    first_item = my_list[0]
+    my_dict = {}
+
+    for item in my_list:
+        if not item in my_dict:
+            my_dict[item] = 1
+        else:
+            my_dict[item] = my_dict[item] + 1
+    
+    return my_dict[first_item]
 
 # Parse the HTML response for the Meeting ID, but uses web scraping on Zoom's 
 # website. It can be useful if you want to confirm the PDF's meeting ID with 

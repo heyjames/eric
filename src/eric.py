@@ -23,26 +23,25 @@ def main_loop():
         except Exception as e:
             print(str(e))
 
-# Perform cleanup on system exit
-def cleanup_before_exit():
-    print("Performing cleanup...")
-
-    sys.exit(0)
-
 # Tasks executed by the scheduler module
 def task():
     print('job() function executed.')
-    
-    result = api.get_first_meeting_data()
-    print(result)
 
-    # Send an email about broken Zoom links to recipients listed in the 
-    # config.cfg file
-    if not result['is_valid_zoom_registration_link'] and config['settings'].getboolean('enable_email_notifications'):
-        try:
-            api.send_emails(result)
-        except Exception as e:
-            print(f'Error sending email: {e}')
+    # Get data from NovusAgenda's calendar
+    first_novus_meeting_data = api.get_first_novus_meeting_data()
+    print(first_novus_meeting_data)
+
+    # Get data from Legistar's calendar
+    # first_legistar_meeting_data = api.get_first_meeting_data()
+    # print(first_legistar_meeting_data)
+
+    # # Send an email about broken Zoom links to recipients listed in the 
+    # # config.cfg file
+    # if not first_legistar_meeting_data['is_valid_zoom_registration_link'] and config['settings'].getboolean('enable_email_notifications'):
+    #     try:
+    #         api.send_emails(first_legistar_meeting_data)
+    #     except Exception as e:
+    #         print(f'Error sending email: {e}')
 
 # Begin script
 if __name__ == "__main__":
