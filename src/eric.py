@@ -3,13 +3,14 @@ from config_module import config
 import schedule
 from task_scheduler import setup_scheduler
 import signal
-import sys
 import time
+import utils
 
 # TODO
 # Add validation to dictionaries (e.g., legistar_parser.py get_data())
 # Add log handlers
 # Add bubble up error handling and add to log file
+# Handle first time debug mode missing files
 
 # Main loop
 def main_loop():
@@ -25,33 +26,41 @@ def main_loop():
 
 # Tasks executed by the scheduler module
 def task():
-    print('job() function executed.')
+    readable_time = utils.iso_time_to_readable(utils.get_iso_time())
+
+    print(f'\n::: {readable_time} ::: START task()\n')
+
+    # Get data from Legistar's calendar
+    first_legistar_meeting_data = api.get_first_meeting_data()
+    print(first_legistar_meeting_data)
+
+    print(f'\n::: spacer ::: task()\n')
 
     # Get data from NovusAgenda's calendar
     first_novus_meeting_data = api.get_first_novus_meeting_data()
     print(first_novus_meeting_data)
 
-    # Get data from Legistar's calendar
-    # first_legistar_meeting_data = api.get_first_meeting_data()
-    # print(first_legistar_meeting_data)
+    print(f'\n::: spacer ::: task()\n')
 
-    # # Send an email about broken Zoom links to recipients listed in the 
-    # # config.cfg file
-    # if not first_legistar_meeting_data['is_valid_zoom_registration_link'] and config['settings'].getboolean('enable_email_notifications'):
-    #     try:
-    #         api.send_emails(first_legistar_meeting_data)
-    #     except Exception as e:
-    #         print(f'Error sending email: {e}')
+    # Send an email to recipients listed in the config.cfg file if broken Zoom 
+    # links are detected
+    if config['settings'].getboolean('enable_email_notifications'):
+        try:
+            api.send_emails(first_legistar_meeting_data)
+        except Exception as e:
+            print(f'Error sending email: {e}')
+
+    print(f'\n::: {readable_time} ::: END task()\n')
 
 # Begin script
 if __name__ == "__main__":
-    # Register the default SIGINT handler (^C will terminate the script)
-    signal.signal(signal.SIGINT, signal.default_int_handler)
-
     try:
+        # Register the default SIGINT handler (^C will terminate the script)
+        signal.signal(signal.SIGINT, signal.default_int_handler)
+
         # Register the task() function as a callback
         setup_scheduler(task)
-        
+
         main_loop()
     except KeyboardInterrupt:
         # Executed when ^C is pressed

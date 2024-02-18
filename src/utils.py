@@ -23,7 +23,7 @@ def get_iso_time():
 
     return iso_format_utc
 
-def convert_iso_time_to_human_readable(iso_string):
+def iso_time_to_readable(iso_string):
     # Parse ISO string to datetime dictionary in UTC
     utc_datetime = datetime.strptime(iso_string, "%Y-%m-%dT%H:%M:%S.%fZ")
     utc_datetime = utc_datetime.replace(tzinfo=pytz.utc)
@@ -136,6 +136,7 @@ def download_html_response(url_path, file_path):
         print(f"Error: {e}")
         return None
 
+# Create a hash table to count the number of occurrences of the first key
 def count_same_strings_from_list(my_list):
     first_item = my_list[0]
     my_dict = {}

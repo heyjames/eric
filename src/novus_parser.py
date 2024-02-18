@@ -52,6 +52,8 @@ class NovusParser:
         text = columns[0].get_text(strip=True)
         return text
     
+    # The link to the web-based agenda on the main Novus page is a JavaScript 
+    # function, so this needs to be extracted and appended to the main URL
     def parse_agenda(self, columns):
         a_el = columns[3].select_one('a')
 
@@ -60,7 +62,7 @@ class NovusParser:
 
         if match:
             extracted_string = match.group(1)
-            return 'https://alameda.novusagenda.com/agendapublic/' + extracted_string
+            return config['settings']['novus_url'] + extracted_string
         else:
             print("Pattern not found.")
     
