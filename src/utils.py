@@ -1,4 +1,4 @@
-from config_module import config
+from config import config
 from datetime import datetime
 import json
 import pytz

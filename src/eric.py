@@ -1,5 +1,5 @@
 import api
-from config_module import config
+from config import config
 import schedule
 from task_scheduler import setup_scheduler
 import signal

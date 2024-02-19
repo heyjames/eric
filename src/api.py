@@ -1,4 +1,4 @@
-from config_module import config
+from config import config
 from legistar_parser import LegistarParser
 from novus_parser import NovusParser
 from pdf_parser import PDFParser

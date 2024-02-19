@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from config_module import config
+from config import config
 import re
 import time
 import utils

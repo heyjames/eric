@@ -1,4 +1,4 @@
-from config_module import config
+from config import config
 import fitz # PyMuPDF
 import requests
 import utils
