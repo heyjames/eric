@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from config_module import config
 import re
+import time
 import utils
 
 class LegistarParser:
@@ -28,6 +29,15 @@ class LegistarParser:
         all_meetings = self.format_rows(bs_all_meetings)
 
         return upcoming_meetings, all_meetings
+
+    # Get the first non-canceled meeting (only supports Upcoming Meetings)
+    @staticmethod
+    def get_first_non_canceled_meeting(meetings):
+        for meeting in meetings:
+            if meeting['is_meeting_canceled'] == False:
+                return meeting
+            
+            time.sleep(1)
     
     # Create a list of dictionaries by parsing the data (column) from each row
     def format_rows(self, rows):

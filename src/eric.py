@@ -31,24 +31,24 @@ def task():
     print(f'\n::: {readable_time} ::: START task()\n')
 
     # Get data from Legistar's calendar
-    first_legistar_meeting_data = api.get_first_meeting_data()
-    print(first_legistar_meeting_data)
+    # first_legistar_meeting_data = api.get_first_meeting_data()
+    # print(first_legistar_meeting_data)
 
-    print(f'\n::: spacer ::: task()\n')
+    # print(f'\n::: spacer ::: task()\n')
 
     # Get data from NovusAgenda's calendar
     first_novus_meeting_data = api.get_first_novus_meeting_data()
     print(first_novus_meeting_data)
 
-    print(f'\n::: spacer ::: task()\n')
+    # print(f'\n::: spacer ::: task()\n')
 
     # Send an email to recipients listed in the config.cfg file if broken Zoom 
     # links are detected
-    if config['settings'].getboolean('enable_email_notifications'):
-        try:
-            api.send_emails(first_legistar_meeting_data)
-        except Exception as e:
-            print(f'Error sending email: {e}')
+    # if config['settings'].getboolean('enable_email_notifications'):
+        # try:
+            # api.send_emails(first_legistar_meeting_data)
+        # except Exception as e:
+            # print(f'Error sending email: {e}')
 
     print(f'\n::: {readable_time} ::: END task()\n')
 

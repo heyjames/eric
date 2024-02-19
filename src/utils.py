@@ -137,7 +137,7 @@ def download_html_response(url_path, file_path):
         return None
 
 # Create a hash table to count the number of occurrences of the first key
-def count_same_strings_from_list(my_list):
+def are_all_strings_same(my_list):
     first_item = my_list[0]
     my_dict = {}
 
@@ -147,7 +147,10 @@ def count_same_strings_from_list(my_list):
         else:
             my_dict[item] = my_dict[item] + 1
     
-    return my_dict[first_item]
+    if my_dict[first_item] == len(my_list):
+        return True
+    else:
+        return False
 
 # Parse the HTML response for the Meeting ID, but uses web scraping on Zoom's 
 # website. It can be useful if you want to confirm the PDF's meeting ID with 

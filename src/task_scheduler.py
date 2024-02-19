@@ -6,14 +6,14 @@ import schedule
 def setup_scheduler(callback):
     if config['settings'].getboolean('debug'):
         # schedule.every().sunday.at('01:26').do(task)
-        schedule.every(4).seconds.do(callback)
+        schedule.every(3).seconds.do(callback)
     else:
         # Get schedule from config file
         for day, times_str in config['schedule'].items():
             # Split the comma-separated times
             times = []
-            for time in times_str.split(','):
-                stripped_time = time.strip()
+            for my_time in times_str.split(','):
+                stripped_time = my_time.strip()
                 times.append(stripped_time)
 
             # Parse and schedule jobs for each time in the list
