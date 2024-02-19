@@ -152,6 +152,12 @@ def are_all_strings_same(my_list):
     else:
         return False
 
+def append_two_objects(obj_1, obj_2):
+    result = {}
+    result.update(obj_1)
+    result.update(obj_2)
+
+    return result
 # Parse the HTML response for the Meeting ID, but uses web scraping on Zoom's 
 # website. It can be useful if you want to confirm the PDF's meeting ID with 
 # the one from the Zoom registration webpage.

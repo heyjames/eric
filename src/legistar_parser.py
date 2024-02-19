@@ -1,3 +1,4 @@
+import api
 from bs4 import BeautifulSoup
 from config import config
 import re
@@ -8,10 +9,15 @@ class LegistarParser:
     """
     Read the HTML content from the Legistar website and parse the meeting data.
     """
-    def __init__(self, path):
-        self.path = path
-
-    def get_data(self):
+    def __init__(self):
+        self.path = None
+        self.formatted_meetings = None
+        self.first_meeting_data = None
+        self.first_non_canceled_meeting = None
+        self.pdf_data = None
+    
+    # Format meeting data into dictionaries from Legistar website
+    def set_formatted_meetings(self):
         # Get raw HTML
         html_content = utils.get_html_content(self.path)
 
@@ -28,16 +34,7 @@ class LegistarParser:
         upcoming_meetings = self.format_rows(bs_upcoming_meetings)
         all_meetings = self.format_rows(bs_all_meetings)
 
-        return upcoming_meetings, all_meetings
-
-    # Get the first non-canceled meeting (only supports Upcoming Meetings)
-    @staticmethod
-    def get_first_non_canceled_meeting(meetings):
-        for meeting in meetings:
-            if meeting['is_meeting_canceled'] == False:
-                return meeting
-            
-            time.sleep(1)
+        self.formatted_meetings = upcoming_meetings, all_meetings
     
     # Create a list of dictionaries by parsing the data (column) from each row
     def format_rows(self, rows):
@@ -125,3 +122,36 @@ class LegistarParser:
 
     def parse_cancelled_meeting(self, location):
         return 'cancel' in location.lower()
+    
+    # Parse the Legistar website and create an dictionary of each meeting
+    def set_path(self):
+        if config['settings'].getboolean('debug'):
+            self.path = config['settings']['debug_legistar_path']
+        else:
+            self.path = config['settings']['legistar_url']
+
+    # Set the first non-canceled meeting (only supports Upcoming Meetings)
+    def set_first_non_canceled_meeting(self):
+        for meeting in self.formatted_meetings[0]:
+            if meeting['is_meeting_canceled'] == False:
+                self.first_non_canceled_meeting = meeting
+                return
+            
+            time.sleep(1)
+
+    # Set the Zoom data from the PDF
+    def set_pdf_data(self):
+        self.pdf_data = api.get_pdf_data(self.first_non_canceled_meeting)
+    
+    def set_first_meeting_data(self):
+        self.first_meeting_data = utils.append_two_objects(self.first_non_canceled_meeting, self.pdf_data)
+    
+    def get_first_meeting_data(self):
+        return self.first_meeting_data
+    
+    def run(self):
+        self.set_path()
+        self.set_formatted_meetings()
+        self.set_first_non_canceled_meeting()
+        self.set_pdf_data()
+        self.set_first_meeting_data()

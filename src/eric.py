@@ -31,14 +31,14 @@ def task():
     print(f'\n::: {readable_time} ::: START task()\n')
 
     # Get data from Legistar's calendar
-    # first_legistar_meeting_data = api.get_first_meeting_data()
-    # print(first_legistar_meeting_data)
+    first_legistar_meeting_data = api.get_first_legistar_meeting_data()
+    print(first_legistar_meeting_data)
 
     # print(f'\n::: spacer ::: task()\n')
 
     # Get data from NovusAgenda's calendar
-    first_novus_meeting_data = api.get_first_novus_meeting_data()
-    print(first_novus_meeting_data)
+    # first_novus_meeting_data = api.get_first_novus_meeting_data()
+    # print(first_novus_meeting_data)
 
     # print(f'\n::: spacer ::: task()\n')
 
