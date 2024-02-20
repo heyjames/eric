@@ -152,10 +152,11 @@ def are_all_strings_same(my_list):
     else:
         return False
 
-def append_two_objects(obj_1, obj_2):
+def append_dictionaries(dictionary_list):
     result = {}
-    result.update(obj_1)
-    result.update(obj_2)
+    
+    for dictionary in dictionary_list:
+        result.update(dictionary)
 
     return result
 # Parse the HTML response for the Meeting ID, but uses web scraping on Zoom's 

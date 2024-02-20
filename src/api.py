@@ -1,24 +1,41 @@
 from config import config
+import gmail
 from legistar_parser import LegistarParser
 from novus_parser import NovusParser
 from pdf_parser import PDFParser
-import gmail
+import utils
 
-def get_first_novus_meeting_data():
+def get_first_novus_meeting():
     try:
         novus_parser = NovusParser()
         novus_parser.run()
-        return novus_parser.get_first_meeting_data()
+        return novus_parser.get_first_meeting()
 
     except Exception as e:
         print(f'Error: {e}')
 
-def get_first_legistar_meeting_data():
+def get_first_legistar_meeting():
     try:
         legistar_parser = LegistarParser()
         legistar_parser.run()
-        return legistar_parser.get_first_meeting_data()
 
+        first_non_canceled_meeting = legistar_parser.get_first_non_canceled_meeting()
+        pdf_data = get_pdf(first_non_canceled_meeting)
+        
+        # Combine the meeting and pdf data
+        return utils.append_dictionaries([first_non_canceled_meeting, pdf_data])
+
+    except Exception as e:
+        # print(f'Error: {traceback.format_exc()}')
+        print(f'Error: {e}')
+
+# Parse the PDF for the Zoom registration link and check its HTTP response
+def get_pdf(meeting):
+    try:
+        pdf_parser = PDFParser(meeting)
+        pdf_parser.run()
+        return pdf_parser.get_data()
+    
     except Exception as e:
         print(f'Error: {e}')
 
@@ -44,21 +61,5 @@ def send_emails(meeting_data):
 
         gmail.send_message(email_content)
 
-    except Exception as e:
-        print(f'Error: {e}')
-
-# Parse the PDF for the Zoom registration link and check its HTTP response
-def get_pdf_data(first_non_canceled_meeting):
-    try:
-        # Use a file path or URL if debug mode is enabled
-        if config['settings'].getboolean('debug'):
-            path = config['settings']['debug_pdf_path']
-        else:
-            path = first_non_canceled_meeting['agenda']
-        
-        pdf_parser = PDFParser(path)
-        pdf_data = pdf_parser.get_data()
-
-        return pdf_data
     except Exception as e:
         print(f'Error: {e}')

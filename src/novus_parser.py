@@ -15,7 +15,7 @@ class NovusParser:
         self.meeting_agenda_zoom_urls = None
         self.are_zoom_links_same = None
         self.is_valid_zoom_registration_link = None
-        self.first_meeting_data = None
+        self.first_meeting = None
 
     # Parse raw HTML from the Novus calendar into a list of meetings 
     # dictionaries
@@ -105,23 +105,23 @@ class NovusParser:
             else:
                 self.is_valid_zoom_registration_link = utils.is_successful_http_response(self.meeting_agenda_zoom_urls[0])
 
-    def set_first_meeting_data(self):
+    def set_first_meeting(self):
         if self.is_regular_meeting == False:
-            self.first_meeting_data = {
+            self.first_meeting = {
                 'novus_success': False,
                 'novus_error': 'The first NovusAgenda meeting is not a regular meeting.',
                 'novus_timestamp': utils.get_unix_time()
             }
         else:
             if self.are_zoom_links_same:
-                self.first_meeting_data = {
+                self.first_meeting = {
                     'novus_success': True,
                     'novus_timestamp': utils.get_unix_time(),
                     'novus_zoom_registration_link': self.meeting_agenda_zoom_urls[0],
                     'novus_is_valid_zoom_registration_link': self.is_valid_zoom_registration_link
                 }
             else:
-                self.first_meeting_data = {
+                self.first_meeting = {
                     'novus_success': False,
                     'novus_error': 'Zoom links are not the same',
                     'novus_timestamp': utils.get_unix_time()
@@ -142,8 +142,8 @@ class NovusParser:
         else:
             self.agenda_path = self.formatted_meetings[0]['agenda']
     
-    def get_first_meeting_data(self):
-        return self.first_meeting_data
+    def get_first_meeting(self):
+        return self.first_meeting
 
     def run(self):
         self.set_path()
@@ -151,4 +151,4 @@ class NovusParser:
         self.set_agenda_path()
         self.set_agenda_zoom_registration_link()
         self.set_is_regular_meeting()
-        self.set_first_meeting_data()
+        self.set_first_meeting()

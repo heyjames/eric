@@ -1,4 +1,3 @@
-import api
 from bs4 import BeautifulSoup
 from config import config
 import re
@@ -12,9 +11,7 @@ class LegistarParser:
     def __init__(self):
         self.path = None
         self.formatted_meetings = None
-        self.first_meeting_data = None
         self.first_non_canceled_meeting = None
-        self.pdf_data = None
     
     # Format meeting data into dictionaries from Legistar website
     def set_formatted_meetings(self):
@@ -134,24 +131,16 @@ class LegistarParser:
     def set_first_non_canceled_meeting(self):
         for meeting in self.formatted_meetings[0]:
             if meeting['is_meeting_canceled'] == False:
+                meeting['timestamp'] = utils.get_unix_time()
                 self.first_non_canceled_meeting = meeting
                 return
             
             time.sleep(1)
 
-    # Set the Zoom data from the PDF
-    def set_pdf_data(self):
-        self.pdf_data = api.get_pdf_data(self.first_non_canceled_meeting)
-    
-    def set_first_meeting_data(self):
-        self.first_meeting_data = utils.append_two_objects(self.first_non_canceled_meeting, self.pdf_data)
-    
-    def get_first_meeting_data(self):
-        return self.first_meeting_data
+    def get_first_non_canceled_meeting(self):
+        return self.first_non_canceled_meeting
     
     def run(self):
         self.set_path()
         self.set_formatted_meetings()
         self.set_first_non_canceled_meeting()
-        self.set_pdf_data()
-        self.set_first_meeting_data()
