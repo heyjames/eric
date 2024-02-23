@@ -50,7 +50,9 @@ class PDFParser:
 
     def set_zoom_registration_link(self):
         # Extract the first Zoom registration link from the PDF text
-        self.zoom_registration_link = utils.extract_zoom_registration_links(self.pdf_text)[0]
+        zoom_registration_links = utils.extract_zoom_registration_links(self.pdf_text)
+        if len(zoom_registration_links) > 0:
+            self.zoom_registration_link = zoom_registration_links[0]
 
     def set_is_valid_zoom_registration_link(self):
         # If a Zoom registration link exists, check for a successful response
@@ -59,15 +61,24 @@ class PDFParser:
             if config['settings'].getboolean('debug'):
                 self.is_valid_zoom_registration_link = False
             else:
-                self.is_valid_zoom_registration_link = utils.is_successful_http_response(self.zoom_registration_link)
+                self.is_valid_zoom_registration_link = utils.is_valid_zoom_registration_link(self.zoom_registration_link)
     
     def set_data(self):
-        self.data = {
-            'pdf_success': True,
-            'pdf_timestamp': utils.get_unix_time(),
-            'pdf_zoom_registration_link': self.zoom_registration_link,
-            'pdf_is_valid_zoom_registration_link': self.is_valid_zoom_registration_link
-        }
+        # If no Zoom registration link was found
+        if self.zoom_registration_link == None and self.is_valid_zoom_registration_link == None:
+            self.data = {
+                'pdf_success': False,
+                'pdf_timestamp': utils.get_unix_time(),
+                'pdf_zoom_registration_link': self.zoom_registration_link,
+                'pdf_is_valid_zoom_registration_link': self.is_valid_zoom_registration_link
+            }
+        else:
+            self.data = {
+                'pdf_success': True,
+                'pdf_timestamp': utils.get_unix_time(),
+                'pdf_zoom_registration_link': self.zoom_registration_link,
+                'pdf_is_valid_zoom_registration_link': self.is_valid_zoom_registration_link
+            }
     
     def get_data(self):
         return self.data

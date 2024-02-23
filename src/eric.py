@@ -26,21 +26,17 @@ def main_loop():
 
 # Tasks executed by the scheduler module
 def task():
-    readable_time = utils.iso_time_to_readable(utils.get_iso_time())
-
-    print(f'\n::: {readable_time} ::: START task()\n')
+    print(f'\n::: {utils.get_readable_date_time()} ::: START task()\n')
 
     # Get data from Legistar's calendar
-    first_legistar_meeting = api.get_first_legistar_meeting()
-    print(first_legistar_meeting)
-
-    # print(f'\n::: spacer ::: task()\n')
+    # first_legistar_meeting = api.get_first_legistar_meeting()
+    # print(first_legistar_meeting)
+    # print(f'\n\n               eric.py - task() - spacer\n\n')
 
     # Get data from NovusAgenda's calendar
-    # first_novus_meeting = api.get_first_novus_meeting()
-    # print(first_novus_meeting)
-
-    # print(f'\n::: spacer ::: task()\n')
+    first_novus_meeting = api.get_first_novus_meeting()
+    print(first_novus_meeting)
+    print(f'\n\n               eric.py - task() - spacer\n\n')
 
     # Send an email to recipients listed in the config.cfg file if broken Zoom 
     # links are detected
@@ -50,7 +46,7 @@ def task():
         # except Exception as e:
             # print(f'Error sending email: {e}')
 
-    print(f'\n::: {readable_time} ::: END task()\n')
+    print(f'\n::: {utils.get_readable_date_time()} ::: END task()\n')
 
 # Begin script
 if __name__ == "__main__":

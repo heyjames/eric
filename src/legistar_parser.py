@@ -127,7 +127,9 @@ class LegistarParser:
         else:
             self.path = config['settings']['legistar_url']
 
-    # Set the first non-canceled meeting (only supports Upcoming Meetings)
+    # Search the list of meetings until the first non-canceled meeting is 
+    # found. Then set it as the first non-canceled meeting (only supports 
+    # Upcoming Meetings)
     def set_first_non_canceled_meeting(self):
         for meeting in self.formatted_meetings[0]:
             if meeting['is_meeting_canceled'] == False:

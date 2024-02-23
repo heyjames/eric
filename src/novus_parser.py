@@ -86,24 +86,38 @@ class NovusParser:
         else:
             self.is_regular_meeting = False
     
-    def set_agenda_zoom_registration_link(self):
+    def set_agenda_zoom_registration_links(self):
         # Get the raw HTML from the first meeting's agenda's path
         self.first_meeting_agenda_raw_html = utils.get_html_content(self.agenda_path)
 
         # Extract all the Zoom registration URLs
-        self.meeting_agenda_zoom_urls = utils.extract_zoom_registration_links(self.first_meeting_agenda_raw_html)
-        
-        # Check if all 4 extracted Zoom links are the same
-        self.are_zoom_links_same = utils.are_all_strings_same(self.meeting_agenda_zoom_urls)
+        meeting_agenda_zoom_urls = utils.extract_zoom_registration_links(self.first_meeting_agenda_raw_html)
 
-        # Return the first Novus meeting data dictionary if all 4 Zoom registration 
-        # links are the same
-        if self.are_zoom_links_same:
-            # Avoid sending a request to the URL if debug mode is enabled
-            if config['settings'].getboolean('debug'):
-                self.is_valid_zoom_registration_link = False
-            else:
-                self.is_valid_zoom_registration_link = utils.is_successful_http_response(self.meeting_agenda_zoom_urls[0])
+        if len(meeting_agenda_zoom_urls) > 0:
+            self.meeting_agenda_zoom_urls = meeting_agenda_zoom_urls
+
+
+    def set_is_valid_zoom_registration_link(self):
+        if len(self.meeting_agenda_zoom_urls) > 0:
+            if len(self.meeting_agenda_zoom_urls) == 1:
+                # Avoid sending a request to the URL if debug mode is enabled
+                if config['settings'].getboolean('debug'):
+                    self.is_valid_zoom_registration_link = False
+                else:
+                    self.is_valid_zoom_registration_link = utils.is_valid_zoom_registration_link(self.meeting_agenda_zoom_urls[0])
+
+            if len(self.meeting_agenda_zoom_urls) > 1:
+                # Check if all 4 extracted Zoom links are the same
+                self.are_zoom_links_same = utils.are_all_strings_same(self.meeting_agenda_zoom_urls)
+
+                # Return the first Novus meeting data dictionary if all 4 Zoom registration 
+                # links are the same
+                if self.are_zoom_links_same:
+                    # Avoid sending a request to the URL if debug mode is enabled
+                    if config['settings'].getboolean('debug'):
+                        self.is_valid_zoom_registration_link = False
+                    else:
+                        self.is_valid_zoom_registration_link = utils.is_valid_zoom_registration_link(self.meeting_agenda_zoom_urls[0])
 
     def set_first_meeting(self):
         if self.is_regular_meeting == False:
@@ -149,6 +163,7 @@ class NovusParser:
         self.set_path()
         self.set_formatted_meetings()
         self.set_agenda_path()
-        self.set_agenda_zoom_registration_link()
+        self.set_agenda_zoom_registration_links()
+        self.set_is_valid_zoom_registration_link()
         self.set_is_regular_meeting()
         self.set_first_meeting()
