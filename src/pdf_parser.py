@@ -18,8 +18,8 @@ class PDFParser:
     
     def set_path(self):
         # Use a file path or URL if debug mode is enabled
-        if config['settings'].getboolean('debug'):
-            self.path = config['settings']['debug_pdf_path']
+        if config['developer'].getboolean('debug_enable'):
+            self.path = config['developer']['debug_pdf_path']
         else:
             self.path = self.first_non_canceled_meeting['agenda']
 
@@ -58,7 +58,7 @@ class PDFParser:
         # If a Zoom registration link exists, check for a successful response
         if self.zoom_registration_link:
             # Use False for testing purposes
-            if config['settings'].getboolean('debug'):
+            if config['developer'].getboolean('debug_enable'):
                 self.is_valid_zoom_registration_link = False
             else:
                 self.is_valid_zoom_registration_link = utils.is_valid_zoom_registration_link(self.zoom_registration_link)

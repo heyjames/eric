@@ -87,7 +87,7 @@ class LegistarParser:
     def parse_details(self, columns):
         details = columns[5].select_one("a[id$='_hypMeetingDetail']")
         if details and details.has_attr('href'):
-            details = config['settings']['legistar_url'] + details['href']
+            details = config['developer']['legistar_url'] + details['href']
         else:
             details = ''
         return details
@@ -95,7 +95,7 @@ class LegistarParser:
     def parse_agenda(self, columns):
         agenda = columns[6].select_one("a[id$='_hypAgenda']")
         if agenda and agenda.has_attr('href'):
-            agenda = config['settings']['legistar_url'] + agenda['href']
+            agenda = config['developer']['legistar_url'] + agenda['href']
         else:
             agenda = ''
         return agenda
@@ -106,7 +106,7 @@ class LegistarParser:
             pattern = r"window\.open\('([^']+)',"
             match = re.search(pattern, video['onclick'])
             if match:
-                video = config['settings']['legistar_url'] + match.group(1)
+                video = config['developer']['legistar_url'] + match.group(1)
         else:
             video = ''
         return video
@@ -122,10 +122,10 @@ class LegistarParser:
     
     # Parse the Legistar website and create an dictionary of each meeting
     def set_path(self):
-        if config['settings'].getboolean('debug'):
-            self.path = config['settings']['debug_legistar_path']
+        if config['developer'].getboolean('debug_enable'):
+            self.path = config['developer']['debug_legistar_path']
         else:
-            self.path = config['settings']['legistar_url']
+            self.path = config['developer']['legistar_url']
 
     # Search the list of meetings until the first non-canceled meeting is 
     # found. Then set it as the first non-canceled meeting (only supports 

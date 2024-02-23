@@ -69,7 +69,7 @@ class NovusParser:
 
         if match:
             extracted_string = match.group(1)
-            return config['settings']['novus_url'] + extracted_string
+            return config['developer']['novus_url'] + extracted_string
         else:
             print("Pattern not found.")
     
@@ -96,12 +96,11 @@ class NovusParser:
         if len(meeting_agenda_zoom_urls) > 0:
             self.meeting_agenda_zoom_urls = meeting_agenda_zoom_urls
 
-
     def set_is_valid_zoom_registration_link(self):
         if len(self.meeting_agenda_zoom_urls) > 0:
             if len(self.meeting_agenda_zoom_urls) == 1:
                 # Avoid sending a request to the URL if debug mode is enabled
-                if config['settings'].getboolean('debug'):
+                if config['developer'].getboolean('debug_enable'):
                     self.is_valid_zoom_registration_link = False
                 else:
                     self.is_valid_zoom_registration_link = utils.is_valid_zoom_registration_link(self.meeting_agenda_zoom_urls[0])
@@ -114,7 +113,7 @@ class NovusParser:
                 # links are the same
                 if self.are_zoom_links_same:
                     # Avoid sending a request to the URL if debug mode is enabled
-                    if config['settings'].getboolean('debug'):
+                    if config['developer'].getboolean('debug_enable'):
                         self.is_valid_zoom_registration_link = False
                     else:
                         self.is_valid_zoom_registration_link = utils.is_valid_zoom_registration_link(self.meeting_agenda_zoom_urls[0])
@@ -143,16 +142,16 @@ class NovusParser:
     
     # Use a file path or URL if debug mode is enabled
     def set_path(self):
-        if config['settings'].getboolean('debug'):
-            self.path = config['settings']['debug_novus_path']
+        if config['developer'].getboolean('debug_enable'):
+            self.path = config['developer']['debug_novus_path']
         else:
-            self.path = config['settings']['novus_url']
+            self.path = config['developer']['novus_url']
     
     # Unlike Legistar, we can view a meeting's agenda in HTML, so we get the 
     # first meeting's agenda's URL, or file path if debug mode is enabled
     def set_agenda_path(self):
-        if config['settings'].getboolean('debug'):
-            self.agenda_path = config['settings']['debug_novus_agenda_path']
+        if config['developer'].getboolean('debug_enable'):
+            self.agenda_path = config['developer']['debug_novus_agenda_path']
         else:
             self.agenda_path = self.formatted_meetings[0]['agenda']
     

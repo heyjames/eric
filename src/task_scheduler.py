@@ -4,7 +4,7 @@ import schedule
 
 # Register times in the scheduler module
 def setup_scheduler(callback):
-    if config['settings'].getboolean('debug'):
+    if config['developer'].getboolean('debug_enable'):
         # schedule.every().sunday.at('01:26').do(task)
         schedule.every(3).seconds.do(callback)
     else:

@@ -31,12 +31,12 @@ def task():
     # Get data from Legistar's calendar
     # first_legistar_meeting = api.get_first_legistar_meeting()
     # print(first_legistar_meeting)
-    # print(f'\n\n               eric.py - task() - spacer\n\n')
+    # print(f'\n\n                              spacer\n\n')
 
     # Get data from NovusAgenda's calendar
     first_novus_meeting = api.get_first_novus_meeting()
     print(first_novus_meeting)
-    print(f'\n\n               eric.py - task() - spacer\n\n')
+    print(f'\n\n                              spacer\n\n')
 
     # Send an email to recipients listed in the config.cfg file if broken Zoom 
     # links are detected
