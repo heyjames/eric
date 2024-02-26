@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from config import config
+from log import logger
 import re
 import time
 import utils
@@ -12,9 +13,13 @@ class LegistarParser:
         self.path = None
         self.formatted_meetings = None
         self.first_non_canceled_meeting = None
+
+        logger.info('Initializing LegistarParser instance')
     
     # Format meeting data into dictionaries from Legistar website
     def set_formatted_meetings(self):
+        logger.debug('Starting LegistarParser set_formatted_meetings')
+        
         # Get raw HTML
         html_content = utils.get_html_content(self.path)
 
@@ -49,7 +54,7 @@ class LegistarParser:
             agenda = self.parse_agenda(columns)
             video = self.parse_video(columns)
 
-            is_meeting_canceled = self.parse_cancelled_meeting(location)
+            is_meeting_canceled = self.parse_canceled_meeting(location)
 
             meetings.append({
                 'id': id,
@@ -117,7 +122,7 @@ class LegistarParser:
         else:
             return None
 
-    def parse_cancelled_meeting(self, location):
+    def parse_canceled_meeting(self, location):
         return 'cancel' in location.lower()
     
     # Parse the Legistar website and create an dictionary of each meeting
@@ -131,6 +136,8 @@ class LegistarParser:
     # found. Then set it as the first non-canceled meeting (only supports 
     # Upcoming Meetings)
     def set_first_non_canceled_meeting(self):
+        logger.debug('Starting LegistarParser set_first_non_canceled_meeting')
+
         for meeting in self.formatted_meetings[0]:
             if meeting['is_meeting_canceled'] == False:
                 meeting['timestamp'] = utils.get_unix_time()
@@ -140,6 +147,8 @@ class LegistarParser:
             time.sleep(1)
 
     def get_first_non_canceled_meeting(self):
+        logger.debug('Starting LegistarParser get_first_non_canceled_meeting')
+
         return self.first_non_canceled_meeting
     
     def run(self):

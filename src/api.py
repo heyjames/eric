@@ -1,11 +1,13 @@
 from config import config
 import gmail
 from legistar_parser import LegistarParser
+from log import logger
 from novus_parser import NovusParser
 from pdf_parser import PDFParser
 import utils
 
 def get_first_novus_meeting():
+    logger.info('Starting get_first_novus_meeting')
     try:
         novus_parser = NovusParser()
         novus_parser.run()
@@ -15,6 +17,7 @@ def get_first_novus_meeting():
         print(f'Error: {e}')
 
 def get_first_legistar_meeting():
+    logger.info('Starting get_first_legistar_meeting')
     try:
         legistar_parser = LegistarParser()
         legistar_parser.run()
@@ -31,6 +34,7 @@ def get_first_legistar_meeting():
 
 # Parse the PDF for the Zoom registration link and check its HTTP response
 def get_pdf(meeting):
+    logger.info('Starting get_pdf')
     try:
         pdf_parser = PDFParser(meeting)
         pdf_parser.run()
@@ -40,6 +44,7 @@ def get_pdf(meeting):
         print(f'Error: {e}')
 
 def send_emails(meeting_data):
+    logger.info('Starting send_emails')
     try:
         # Return if no recipients are listed in the config file
         if not config['email_broken_zoom_link']['recipients']:

@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from config import config
+from log import logger
 import re
 import utils
 
@@ -17,9 +18,13 @@ class NovusParser:
         self.is_valid_zoom_registration_link = None
         self.first_meeting = None
 
+        logger.info('Initializing NovusParser instance')
+
     # Parse raw HTML from the Novus calendar into a list of meetings 
     # dictionaries
     def set_formatted_meetings(self):
+        logger.debug('Starting NovusParser set_formatted_meetings')
+
         # Get raw HTML
         html_content = utils.get_html_content(self.path)
 
@@ -81,12 +86,16 @@ class NovusParser:
     
     # Check if it's a regular or special meeting
     def set_is_regular_meeting(self):
+        logger.debug('Starting NovusParser set_is_regular_meeting')
+
         if 'Council Chambers' in self.first_meeting_agenda_raw_html:
             self.is_regular_meeting = True
         else:
             self.is_regular_meeting = False
     
     def set_agenda_zoom_registration_links(self):
+        logger.debug('Starting NovusParser set_agenda_zoom_registration_links')
+
         # Get the raw HTML from the first meeting's agenda's path
         self.first_meeting_agenda_raw_html = utils.get_html_content(self.agenda_path)
 
@@ -97,6 +106,8 @@ class NovusParser:
             self.meeting_agenda_zoom_urls = meeting_agenda_zoom_urls
 
     def set_is_valid_zoom_registration_link(self):
+        logger.debug('Starting NovusParser set_is_valid_zoom_registration_link')
+
         if len(self.meeting_agenda_zoom_urls) > 0:
             if len(self.meeting_agenda_zoom_urls) == 1:
                 # Avoid sending a request to the URL if debug mode is enabled
@@ -119,6 +130,8 @@ class NovusParser:
                         self.is_valid_zoom_registration_link = utils.is_valid_zoom_registration_link(self.meeting_agenda_zoom_urls[0])
 
     def set_first_meeting(self):
+        logger.debug('Starting NovusParser set_first_meeting')
+
         if self.is_regular_meeting == False:
             self.first_meeting = {
                 'novus_success': False,
@@ -142,6 +155,8 @@ class NovusParser:
     
     # Use a file path or URL if debug mode is enabled
     def set_path(self):
+        logger.debug('Starting NovusParser set_path')
+
         if config['developer'].getboolean('debug_enable'):
             self.path = config['developer']['debug_novus_path']
         else:
@@ -150,6 +165,8 @@ class NovusParser:
     # Unlike Legistar, we can view a meeting's agenda in HTML, so we get the 
     # first meeting's agenda's URL, or file path if debug mode is enabled
     def set_agenda_path(self):
+        logger.debug('Starting NovusParser set_agenda_path')
+
         if config['developer'].getboolean('debug_enable'):
             self.agenda_path = config['developer']['debug_novus_agenda_path']
         else:
