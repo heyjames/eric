@@ -9,7 +9,7 @@ def setup_scheduler(callback):
 
     if config['developer'].getboolean('debug_enable'):
         # schedule.every().sunday.at('01:26').do(task)
-        schedule.every(3).seconds.do(callback)
+        schedule.every(1).seconds.do(callback)
     else:
         # Get schedule from config file
         for day, times_str in config['schedule'].items():

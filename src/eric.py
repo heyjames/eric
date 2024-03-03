@@ -41,12 +41,12 @@ def task():
     # Get data from Legistar's calendar
     logger.debug('Getting first Legistar meeting')
     first_legistar_meeting = api.get_first_legistar_meeting()
-    print('\n', first_legistar_meeting)
+    print(f'\n{first_legistar_meeting}')
 
     # Get data from NovusAgenda's calendar
     logger.debug('Getting first Novus meeting')
     first_novus_meeting = api.get_first_novus_meeting()
-    print('\n', first_novus_meeting)
+    print(f'\n{first_novus_meeting}')
 
     # Send an email to recipients listed in the config.cfg file if broken Zoom 
     # links are detected
