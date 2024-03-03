@@ -71,59 +71,84 @@ class LegistarParser:
         return meetings
     
     def parse_name(self, columns):
-        name = columns[0].select_one("a[id$='_hypBody']").get_text(strip=True)
-        return name
+        try:
+            name = columns[0].select_one("a[id$='_hypBody']").get_text(strip=True)
+            return name
+        except Exception as e:
+            raise ValueError('parse_name: ' + str(e))
     
     def parse_date(self, columns):
-        date = columns[1].get_text(strip=True)
-        return date
+        try:
+            date = columns[100].get_text(strip=True)
+            return date
+        except Exception as e:
+            raise ValueError('parse_date: ' + str(e))
     
     def parse_time(self, columns):
-        time = columns[3].select_one("span[id$='_lblTime']").get_text(strip=True)
-        return time
+        try:
+            time = columns[3].select_one("span[id$='_lblTime']").get_text(strip=True)
+            return time
+        except Exception as e:
+            raise ValueError('parse_time: ' + str(e))
     
     def parse_location(self, columns):
-        location = columns[4]
-        for br_tag in location.find_all('br'):
-            br_tag.replace_with('\n')
-        location = location.get_text()
-        return location
+        try:
+            location = columns[4]
+            for br_tag in location.find_all('br'):
+                br_tag.replace_with('\n')
+            location = location.get_text()
+            return location
+        except Exception as e:
+            raise ValueError('parse_location: ' + str(e))
     
     def parse_details(self, columns):
-        details = columns[5].select_one("a[id$='_hypMeetingDetail']")
-        if details and details.has_attr('href'):
-            details = config['developer']['legistar_url'] + details['href']
-        else:
-            details = ''
-        return details
+        try:
+            details = columns[5].select_one("a[id$='_hypMeetingDetail']")
+            if details and details.has_attr('href'):
+                details = config['developer']['legistar_url'] + details['href']
+            else:
+                details = ''
+            return details
+        except Exception as e:
+            raise ValueError('parse_details: ' + str(e))
     
     def parse_agenda(self, columns):
-        agenda = columns[6].select_one("a[id$='_hypAgenda']")
-        if agenda and agenda.has_attr('href'):
-            agenda = config['developer']['legistar_url'] + agenda['href']
-        else:
-            agenda = ''
-        return agenda
+        try:
+            agenda = columns[6].select_one("a[id$='_hypAgenda']")
+            if agenda and agenda.has_attr('href'):
+                agenda = config['developer']['legistar_url'] + agenda['href']
+            else:
+                agenda = ''
+            return agenda
+        except Exception as e:
+            raise ValueError('parse_agenda: ' + str(e))
     
     def parse_video(self, columns):
-        video = columns[8].select_one("a[id$='_hypVideo']")
-        if video and video.has_attr('onclick'):
-            pattern = r"window\.open\('([^']+)',"
-            match = re.search(pattern, video['onclick'])
-            if match:
-                video = config['developer']['legistar_url'] + match.group(1)
-        else:
-            video = ''
-        return video
+        try:
+            video = columns[8].select_one("a[id$='_hypVideo']")
+            if video and video.has_attr('onclick'):
+                pattern = r"window\.open\('([^']+)',"
+                match = re.search(pattern, video['onclick'])
+                if match:
+                    video = config['developer']['legistar_url'] + match.group(1)
+            else:
+                video = ''
+            return video
+        except Exception as e:
+            raise ValueError('parse_video: ' + str(e))
     
+    # TODO Start validating here
     def parse_id(self, row):
-        if row.has_attr('id'):
+        try:
             return int(row['id'][-1])
-        else:
+        except Exception as e:
             return None
 
     def parse_canceled_meeting(self, location):
-        return 'cancel' in location.lower()
+        try:
+            return 'cancel' in location.lower()
+        except Exception as e:
+            raise ValueError('parse_canceled_meeting: ' + str(e))
     
     # Parse the Legistar website and create an dictionary of each meeting
     def set_path(self):
@@ -138,13 +163,17 @@ class LegistarParser:
     def set_first_non_canceled_meeting(self):
         logger.debug('Starting LegistarParser set_first_non_canceled_meeting')
 
-        for meeting in self.formatted_meetings[0]:
-            if meeting['is_meeting_canceled'] == False:
-                meeting['timestamp'] = utils.get_unix_time()
-                self.first_non_canceled_meeting = meeting
-                return
-            
-            time.sleep(1)
+        try:
+            # Loop through Upcoming meetings section
+            for meeting in self.formatted_meetings[0]:
+                if meeting['is_meeting_canceled'] == False:
+                    meeting['timestamp'] = utils.get_unix_time()
+                    self.first_non_canceled_meeting = meeting
+                    return
+                
+                time.sleep(1)
+        except Exception as e:
+            raise ValueError('set_first_non_canceled_meeting: ' + str(e))
 
     def get_first_non_canceled_meeting(self):
         logger.debug('Starting LegistarParser get_first_non_canceled_meeting')

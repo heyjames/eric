@@ -6,16 +6,6 @@ from novus_parser import NovusParser
 from pdf_parser import PDFParser
 import utils
 
-def get_first_novus_meeting():
-    logger.info('Starting get_first_novus_meeting')
-    try:
-        novus_parser = NovusParser()
-        novus_parser.run()
-        return novus_parser.get_first_meeting()
-
-    except Exception as e:
-        print(f'Error: {e}')
-
 def get_first_legistar_meeting():
     logger.info('Starting get_first_legistar_meeting')
     try:
@@ -30,7 +20,10 @@ def get_first_legistar_meeting():
 
     except Exception as e:
         # print(f'Error: {traceback.format_exc()}')
-        print(f'Error: {e}')
+        error_message = f'Error: get_first_legistar_meeting: {str(e)}'
+        print(error_message)
+        logger.error(error_message)
+        return {}
 
 # Parse the PDF for the Zoom registration link and check its HTTP response
 def get_pdf(meeting):
@@ -41,7 +34,21 @@ def get_pdf(meeting):
         return pdf_parser.get_data()
     
     except Exception as e:
-        print(f'Error: {e}')
+        error_message = f'Error: get_pdf: {str(e)}'
+        print(error_message)
+        logger.error(error_message)
+
+def get_first_novus_meeting():
+    logger.info('Starting get_first_novus_meeting')
+    try:
+        novus_parser = NovusParser()
+        novus_parser.run()
+        return novus_parser.get_first_meeting()
+
+    except Exception as e:
+        error_message = f'Error: get_first_novus_meeting: {str(e)}'
+        print(error_message)
+        logger.error(error_message)
 
 def send_emails(meeting_data):
     logger.info('Starting send_emails')
@@ -67,4 +74,6 @@ def send_emails(meeting_data):
         gmail.send_message(email_content)
 
     except Exception as e:
-        print(f'Error: {e}')
+        error_message = f'Error: send_emails: {str(e)}'
+        print(error_message)
+        logger.error(error_message)
