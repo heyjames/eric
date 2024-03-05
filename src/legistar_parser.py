@@ -79,7 +79,7 @@ class LegistarParser:
     
     def parse_date(self, columns):
         try:
-            date = columns[100].get_text(strip=True)
+            date = columns[1].get_text(strip=True)
             return date
         except Exception as e:
             raise ValueError('parse_date: ' + str(e))
