@@ -20,10 +20,11 @@ def get_first_legistar_meeting():
 
     except Exception as e:
         # print(f'Error: {traceback.format_exc()}')
-        error_message = f'Error: get_first_legistar_meeting: {str(e)}'
-        print(error_message)
+        error_message = f'Error: get_first_legistar_meeting(): {str(e)}'
         logger.error(error_message)
-        return {}
+        return {
+            'error': error_message
+        }
 
 # Parse the PDF for the Zoom registration link and check its HTTP response
 def get_pdf(meeting):

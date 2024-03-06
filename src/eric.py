@@ -76,10 +76,10 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         # Executed when ^C is pressed
         print('\n\n' + color.BLUE + '^C detected. Exiting.' + color.RESET)
-        logger.debug('^C detected. Exiting.')
+        logger.info('^C detected')
     except Exception as e:
         print(traceback.format_exc())
     finally:
         # Executed on script exit (normal or exception)
         print(color.BLUE + 'Exiting.' + color.RESET)
-        logger.debug('Exiting.')
+        logger.info('Exiting program')

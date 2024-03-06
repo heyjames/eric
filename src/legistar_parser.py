@@ -4,6 +4,7 @@ from log import logger
 import re
 import time
 import utils
+import validate
 
 class LegistarParser:
     """
@@ -65,7 +66,8 @@ class LegistarParser:
                 'details': details,
                 'agenda': agenda,
                 'video': video,
-                'is_meeting_canceled': is_meeting_canceled
+                'is_meeting_canceled': is_meeting_canceled,
+                'timestamp': None
             })
 
         return meetings
@@ -73,23 +75,26 @@ class LegistarParser:
     def parse_name(self, columns):
         try:
             name = columns[0].select_one("a[id$='_hypBody']").get_text(strip=True)
+            validate.is_not_blank(name)
             return name
         except Exception as e:
-            raise ValueError('parse_name: ' + str(e))
+            raise ValueError('parse_name(): ' + str(e))
     
     def parse_date(self, columns):
         try:
             date = columns[1].get_text(strip=True)
+            validate.is_date(date)
             return date
         except Exception as e:
-            raise ValueError('parse_date: ' + str(e))
+            raise ValueError('parse_date(): ' + str(e))
     
     def parse_time(self, columns):
         try:
             time = columns[3].select_one("span[id$='_lblTime']").get_text(strip=True)
+            validate.is_time(time)
             return time
         except Exception as e:
-            raise ValueError('parse_time: ' + str(e))
+            raise ValueError('parse_time(): ' + str(e))
     
     def parse_location(self, columns):
         try:
@@ -97,9 +102,10 @@ class LegistarParser:
             for br_tag in location.find_all('br'):
                 br_tag.replace_with('\n')
             location = location.get_text()
+            validate.is_not_blank(location)
             return location
         except Exception as e:
-            raise ValueError('parse_location: ' + str(e))
+            raise ValueError('parse_location(): ' + str(e))
     
     def parse_details(self, columns):
         try:
@@ -108,9 +114,10 @@ class LegistarParser:
                 details = config['developer']['legistar_url'] + details['href']
             else:
                 details = ''
+            validate.is_string(details)
             return details
         except Exception as e:
-            raise ValueError('parse_details: ' + str(e))
+            raise ValueError('parse_details(): ' + str(e))
     
     def parse_agenda(self, columns):
         try:
@@ -119,9 +126,10 @@ class LegistarParser:
                 agenda = config['developer']['legistar_url'] + agenda['href']
             else:
                 agenda = ''
+            validate.is_string(agenda)
             return agenda
         except Exception as e:
-            raise ValueError('parse_agenda: ' + str(e))
+            raise ValueError('parse_agenda(): ' + str(e))
     
     def parse_video(self, columns):
         try:
@@ -133,22 +141,26 @@ class LegistarParser:
                     video = config['developer']['legistar_url'] + match.group(1)
             else:
                 video = ''
+            validate.is_string(video)
             return video
         except Exception as e:
-            raise ValueError('parse_video: ' + str(e))
-    
-    # TODO Start validating here
+            raise ValueError('parse_video(): ' + str(e))
+
     def parse_id(self, row):
         try:
-            return int(row['id'][-1])
+            id = int(row['id'][-1])
+            validate.is_int(id)
+            return id
         except Exception as e:
             return None
 
     def parse_canceled_meeting(self, location):
         try:
-            return 'cancel' in location.lower()
+            result = 'cancel' in location.lower()
+            validate.is_boolean(result)
+            return result
         except Exception as e:
-            raise ValueError('parse_canceled_meeting: ' + str(e))
+            raise ValueError('parse_canceled_meeting(): ' + str(e))
     
     # Parse the Legistar website and create an dictionary of each meeting
     def set_path(self):
@@ -157,7 +169,7 @@ class LegistarParser:
         else:
             self.path = config['developer']['legistar_url']
 
-    # Search the list of meetings until the first non-canceled meeting is 
+    # Search the parsed meetings list until the first non-canceled meeting is 
     # found. Then set it as the first non-canceled meeting (only supports 
     # Upcoming Meetings)
     def set_first_non_canceled_meeting(self):
@@ -167,13 +179,16 @@ class LegistarParser:
             # Loop through Upcoming meetings section
             for meeting in self.formatted_meetings[0]:
                 if meeting['is_meeting_canceled'] == False:
-                    meeting['timestamp'] = utils.get_unix_time()
+                    unix_time = utils.get_unix_time()
+                    validate.is_int(unix_time)
+                    meeting['timestamp'] = unix_time
+
                     self.first_non_canceled_meeting = meeting
                     return
                 
                 time.sleep(1)
         except Exception as e:
-            raise ValueError('set_first_non_canceled_meeting: ' + str(e))
+            raise ValueError('set_first_non_canceled_meeting(): ' + str(e))
 
     def get_first_non_canceled_meeting(self):
         logger.debug('Starting LegistarParser get_first_non_canceled_meeting')

@@ -5,7 +5,7 @@ import schedule
 
 # Register times in the scheduler module
 def setup_scheduler(callback):
-    logger.debug('Starting setup_scheduler')
+    logger.info('Starting setup_scheduler')
 
     if config['developer'].getboolean('debug_enable'):
         # schedule.every().sunday.at('01:26').do(task)
