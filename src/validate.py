@@ -13,6 +13,14 @@ def is_date(date_string):
         raise ValueError('Validation failed: Invalid date format: ' + str(date_string))
     return True
 
+def is_date_novus(date_string):
+    # Example: 01/09/24
+    pattern = r"^(0[1-9]|1[0-2])/(0[1-9]|1[0-9]|2[0-9]|3[0-1])/\d{2}$"
+
+    if not re.match(pattern, date_string):
+        raise ValueError('Validation failed: Invalid date format: ' + str(date_string))
+    return True
+
 def is_time(time_string):
     # Example: 9:01 PM
     pattern = r"^(1[0-2]|[1-9]):([0-5][0-9]) (AM|PM)$"

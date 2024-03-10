@@ -51,47 +51,56 @@ class PDFParser:
 
             pdf_document.close()
         except requests.exceptions.RequestException as e:
-            raise ValueError(f'Request failed: {str(e)}')
+            raise ValueError(f'set_pdf_text(): Request failed: {str(e)}')
         except Exception as e:
-            raise ValueError(f"Failed to read PDF: {str(e)}")
+            raise ValueError(f"set_pdf_text(): Failed to read PDF: {str(e)}")
 
     def set_zoom_registration_link(self):
         logger.debug('Starting PDFParser set_zoom_registration_link')
 
-        # Extract the first Zoom registration link from the PDF text
-        zoom_registration_links = utils.extract_zoom_registration_links(self.pdf_text)
-        if len(zoom_registration_links) > 0:
-            self.zoom_registration_link = zoom_registration_links[0]
+        try:
+            # Extract the first Zoom registration link from the PDF text
+            zoom_registration_links = utils.extract_zoom_registration_links(self.pdf_text)
+            if len(zoom_registration_links) > 0:
+                self.zoom_registration_link = zoom_registration_links[0]
+        except Exception as e:
+            raise ValueError('set_zoom_registration_link(): ' + str(e))
 
     def set_is_valid_zoom_registration_link(self):
         logger.debug('Starting PDFParser set_is_valid_zoom_registration_link')
-
-        # If a Zoom registration link exists, check for a successful response
-        if self.zoom_registration_link:
-            # Use False for testing purposes
-            if config['developer'].getboolean('debug_enable'):
-                self.is_valid_zoom_registration_link = False
-            else:
-                self.is_valid_zoom_registration_link = utils.is_valid_zoom_registration_link(self.zoom_registration_link)
+        
+        try:
+            # If a Zoom registration link exists, check for a successful response
+            if self.zoom_registration_link:
+                # Use False for testing purposes
+                if config['developer'].getboolean('debug_enable'):
+                    self.is_valid_zoom_registration_link = False
+                else:
+                    self.is_valid_zoom_registration_link = utils.is_valid_zoom_registration_link(self.zoom_registration_link)
+        except Exception as e:
+            raise ValueError('set_is_valid_zoom_registration_link(): ' + str(e))
     
     def set_data(self):
         logger.debug('Starting PDFParser set_data')
 
-        # If no Zoom registration link was found
-        if self.zoom_registration_link == None and self.is_valid_zoom_registration_link == None:
-            self.data = {
-                'pdf_success': False,
-                'pdf_timestamp': utils.get_unix_time(),
-                'pdf_zoom_registration_link': self.zoom_registration_link,
-                'pdf_is_valid_zoom_registration_link': self.is_valid_zoom_registration_link
-            }
-        else:
-            self.data = {
-                'pdf_success': True,
-                'pdf_timestamp': utils.get_unix_time(),
-                'pdf_zoom_registration_link': self.zoom_registration_link,
-                'pdf_is_valid_zoom_registration_link': self.is_valid_zoom_registration_link
-            }
+        try:
+            # If no Zoom registration link was found
+            if self.zoom_registration_link == None and self.is_valid_zoom_registration_link == None:
+                self.data = {
+                    'pdf_success': False,
+                    'pdf_timestamp': utils.get_unix_time(),
+                    'pdf_zoom_registration_link': self.zoom_registration_link,
+                    'pdf_is_valid_zoom_registration_link': self.is_valid_zoom_registration_link
+                }
+            else:
+                self.data = {
+                    'pdf_success': True,
+                    'pdf_timestamp': utils.get_unix_time(),
+                    'pdf_zoom_registration_link': self.zoom_registration_link,
+                    'pdf_is_valid_zoom_registration_link': self.is_valid_zoom_registration_link
+                }
+        except Exception as e:
+            raise ValueError('set_data():' + str(e))
     
     def get_data(self):
         return self.data
