@@ -4,6 +4,7 @@ from legistar_parser import LegistarParser
 from log import logger
 from novus_parser import NovusParser
 from pdf_parser import PDFParser
+# import traceback
 import utils
 
 def get_first_legistar_meeting():
@@ -14,7 +15,7 @@ def get_first_legistar_meeting():
 
         first_non_canceled_meeting = legistar_parser.get_first_non_canceled_meeting()
         pdf_data = get_pdf(first_non_canceled_meeting)
-        
+
         # Combine the meeting and pdf data
         return utils.append_dictionaries([first_non_canceled_meeting, pdf_data])
 
@@ -29,15 +30,16 @@ def get_first_legistar_meeting():
 # Parse the PDF for the Zoom registration link and check its HTTP response
 def get_pdf(meeting):
     logger.info('Starting get_pdf')
+
     try:
         pdf_parser = PDFParser(meeting)
         pdf_parser.run()
         return pdf_parser.get_data()
     
     except Exception as e:
-        error_message = f'Error: get_pdf: {str(e)}'
-        print(error_message)
+        error_message = f'get_pdf(): {str(e)}'
         logger.error(error_message)
+        raise ValueError(error_message)
 
 def get_first_novus_meeting():
     logger.info('Starting get_first_novus_meeting')
@@ -48,8 +50,11 @@ def get_first_novus_meeting():
 
     except Exception as e:
         error_message = f'Error: get_first_novus_meeting: {str(e)}'
-        print(error_message)
+        # print(error_message)
         logger.error(error_message)
+        return {
+            'error': error_message
+        }
 
 def send_emails(meeting_data):
     logger.info('Starting send_emails')

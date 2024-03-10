@@ -179,9 +179,8 @@ class LegistarParser:
             # Loop through Upcoming meetings section
             for meeting in self.formatted_meetings[0]:
                 if meeting['is_meeting_canceled'] == False:
-                    unix_time = utils.get_unix_time()
-                    validate.is_int(unix_time)
-                    meeting['timestamp'] = unix_time
+                    meeting['legistar_success'] = True
+                    meeting['timestamp'] = utils.get_unix_time()
 
                     self.first_non_canceled_meeting = meeting
                     return

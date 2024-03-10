@@ -6,13 +6,17 @@ import requests
 import re
 import os
 import time
+import validate
 from urllib.parse import urlparse
 
 def get_readable_date_time():
     return iso_time_to_readable(get_iso_time())
 
 def get_unix_time():
-    return int(time.time())
+    unix_time = int(time.time())
+    validate.is_int(unix_time)
+
+    return unix_time
 
 def get_iso_time():
     current_utc_time = datetime.utcnow()
@@ -58,9 +62,8 @@ def extract_urls(text):
 
 # Extract Zoom registration URLs from given text using regular expression
 def extract_zoom_registration_links(text):
-    urls = []
-
     try:
+        urls = []
         zoom_url_pattern = re.compile(r'https?://alamedaca-gov\.zoom\.us/webinar/register/[a-zA-Z0-9_\-]+')
         found_zoom_urls = zoom_url_pattern.findall(text)
 
@@ -77,10 +80,10 @@ def extract_zoom_registration_links(text):
             found_bit_urls = bit_url_pattern.findall(text)
 
             urls.extend(found_bit_urls)
-    except Exception as e:
-        print(f'Error: {str(e)}')
 
-    return urls
+        return urls
+    except Exception as e:
+        raise ValueError('extract_zoom_registration_links(): Failed to extract')
 
 # Check if an HTML response is successful
 def is_successful_http_response(url):
@@ -187,12 +190,15 @@ def are_all_strings_same(my_list):
         return False
 
 def append_dictionaries(dictionary_list):
-    result = {}
-    
-    for dictionary in dictionary_list:
-        result.update(dictionary)
+    try:
+        result = {}
+        
+        for dictionary in dictionary_list:
+            result.update(dictionary)
 
-    return result
+        return result
+    except Exception as e:
+        raise ValueError('append_dictionaryies(): Failed to append')
 
 def is_valid_zoom_registration_link(meeting_agenda_zoom_url):
     try:
