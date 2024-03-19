@@ -1,9 +1,9 @@
 A server application designed to enhance the Legistar website experience.
 * Configure a schedule to periodically validate the next meeting's Zoom registration link inside of the PDF
 * Interface with the browser script to highlight canceled meetings, empty meeting entries
+* Validate Zoom registration links for School Board's agenda
 
 Future capabilities
-* Validate Zoom registration links for School Board's agenda
 * Detect when a member will be attending the meeting remotely in the agenda PDF
 * Detect and extract the closed session time from the agenda PDF
 
@@ -11,7 +11,6 @@ Future capabilities
 ```
 cd eric
 python3 -m venv ./venv
-source venv/bin/activate
 ```
 
 ## Activate Virtual Environment

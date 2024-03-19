@@ -11,9 +11,6 @@ import traceback
 import utils
 
 # TODO
-# Add validation to dictionaries (e.g., legistar_parser.py get_data())
-# Add log handlers
-# Add bubble up error handling and add to log file
 # Handle first time debug mode missing files
 # Allow notifications for canceled meetings - store previous state in a database?
 
