@@ -39,3 +39,37 @@ Edit the day and time in ```src/config.cfg```.
 cd eric/src
 python3 eric.py
 ```
+
+
+## Topology
+
+                        (main loop, init)
+                         =============                
+                        |             |                                    
+                        |   eric.py   |                                    
+                        |             |
+                         ==============                      
+                                ^                             
+                                |                             
+                                v                             
+     ========================================================== 
+    |                                                          |
+    |                           api.py                         |
+    |                                                          |
+     ========================================================== 
+        ^                                         ^                     
+        |                                         |                     
+        |                                         |                     
+        v (I/O layer)                             v (OS control/tools)  
+     ========================           ======================= 
+    |                        |         |                       |
+    |   legistar_parser.py   |         |   task_scheduler.py   |
+    |                        | <-----> |                       |
+    |   novus_parser.py      |         |   utils.py            |
+    |                        |         |                       |
+    |   pdf_parser.py        |         |   gmail.py            |
+    |                        |         |                       |
+     ========================          |   log.py              |
+                                       |                       |
+                                       |                       |
+                                        ======================= 
